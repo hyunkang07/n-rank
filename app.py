@@ -323,11 +323,21 @@ def get_blog_rank_selenium(search_query, target_blog_link, max_scroll_attempts=7
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--single-process")
         options.add_argument("--log-level=3")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         
-        # WebDriver 초기화
-        service = Service(ChromeDriverManager().install())
+        # Streamlit Cloud 환경 감지
+        import os
+        if os.path.exists("/app/.apt/usr/bin/google-chrome"):
+            # Streamlit Cloud 환경
+            options.binary_location = "/app/.apt/usr/bin/google-chrome"
+            service = Service("/app/.apt/usr/bin/chromedriver")
+        else:
+            # 로컬 환경
+            service = Service(ChromeDriverManager().install())
+        
         driver = webdriver.Chrome(service=service, options=options)
         
         # 검색 URL 생성
